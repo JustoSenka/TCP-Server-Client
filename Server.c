@@ -1,5 +1,5 @@
 #include "Server.h"
-#include "list.h"
+#include "List.h"
 
 #include<process.h>
 #include<stdio.h>
