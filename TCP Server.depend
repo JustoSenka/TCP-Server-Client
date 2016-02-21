@@ -1,0 +1,62 @@
+# depslib dependency file v1.0
+1456095993 source:c:\users\justing\desktop\code\c c++\server controller\main.c
+	<stdio.h>
+	<stdlib.h>
+
+1455916804 c:\users\justing\desktop\code\c c++\server controller\server.c
+	"Server.h"
+	<stdio.h>
+	<winsock2.h>
+
+1456096089 c:\users\justing\desktop\code\c c++\server controller\server.h
+	<winsock2.h>
+	"list.h"
+
+1456096137 source:c:\users\justing\desktop\code\c c++\server controller\server.c
+	"Server.h"
+	"list.h"
+	<process.h>
+	<stdio.h>
+	<winsock2.h>
+
+1456094591 source:c:\users\justing\desktop\code\c c++\server controller\list.c
+	<stdlib.h>
+	<string.h>
+	<assert.h>
+	"list.h"
+
+1456092433 c:\users\justing\desktop\code\c c++\server controller\list.h
+
+1456075522 source:c:\users\justing\desktop\code\c c++\server controller\client.c
+	<stdio.h>
+	<sys/types.h>
+	<sys/socket.h>
+	<netinet/in.h>
+	<netdb.h>
+
+1456075522 source:c:\users\justing\desktop\code\c c++\tcp server client\client.c
+	<stdio.h>
+	<sys/types.h>
+	<sys/socket.h>
+	<netinet/in.h>
+	<netdb.h>
+
+1456096703 source:c:\users\justing\desktop\code\c c++\tcp server client\list.c
+	<stdlib.h>
+	<string.h>
+	<assert.h>
+	"List.h"
+
+1456092433 c:\users\justing\desktop\code\c c++\tcp server client\list.h
+
+1456096137 source:c:\users\justing\desktop\code\c c++\tcp server client\server.c
+	"Server.h"
+	"list.h"
+	<process.h>
+	<stdio.h>
+	<winsock2.h>
+
+1456096693 c:\users\justing\desktop\code\c c++\tcp server client\server.h
+	<winsock2.h>
+	"List.h"
+

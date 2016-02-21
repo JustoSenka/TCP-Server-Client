@@ -2,30 +2,28 @@
 #ifndef LIST_H_INCLUDED
 #define LIST_H_INCLUDED
 
-typedef int (*listIterator)(void *);
+typedef struct _El {
+    void* data;
+    struct _El* next;
+} El;
 
-typedef struct _listNode {
-  void* data;
-  struct _listNode *next;
-} ListNode;
-
-typedef struct _list {
-  int logicalLength;
-  int elementSize;
-  ListNode *head;
-  ListNode *tail;
+typedef struct _List {
+    int size;
+    int elementSize;
+    El* pointed;
+    El* head;
 } List;
 
-void list_new(List *list, int elementSize);
-void list_destroy(List *list);
 
-void list_prepend(List *list, void *element);
-void list_append(List *list, void *element);
-int list_size(List *list);
+List* ListCreate(int elementSize);
+short ListInsert(List* list, void* data);
+void* ListGet(List* list, int index);
 
-void* list_head(List *list);
-void  list_remove(void* element);
+short ListGetEnumerator(List* list);
+void* ListPointed(List* list);
 
-void list_for_each(List *list, listIterator iterator);
+short ListRemove(List* list, void* data);
+
+void ListDestroy(List* list);
 
 #endif // LIST_H_INCLUDED

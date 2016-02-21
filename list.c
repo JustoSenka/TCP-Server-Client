@@ -3,87 +3,130 @@
 #include <string.h>
 #include <assert.h>
 
-#include "list.h"
+#include "List.h"
 
-void list_new(List *list, int elementSize)
+
+List* ListCreate(int elementSize)
 {
-  assert(elementSize > 0);
-  list->logicalLength = 0;
-  list->elementSize = elementSize;
-  list->head = list->tail = NULL;
+    List* list = (List*) malloc(sizeof(List));
+    list->head = NULL;
+    list->pointed = NULL;
+    list->size = 0;
+    list->elementSize = elementSize;
+    return list;
 }
 
-void list_destroy(List *list)
+short ListInsert(List* list, void* data)
 {
-  ListNode *current;
-  while(list->head != NULL) {
-    current = list->head;
-    list->head = current->next;
+    if (list == NULL) return 1;
 
-    free(current->data);
-    free(current);
-  }
+    El* temp;
+    if((temp = (El*) malloc(sizeof(El))) == NULL) return 2;
+    if((temp->data = (void*) malloc(list->elementSize)) == NULL) return 2;
+    memcpy(temp->data, data, list->elementSize);
+
+    temp->next = list->head;
+    list->head = temp;
+
+    list->pointed = list->head;
+    list->size++;
+    return 0;
 }
 
-void list_prepend(List *list, void *element)
+void* ListGet(List* list, int index)
 {
-  ListNode *node = malloc(sizeof(ListNode));
-  node->data = malloc(list->elementSize);
-  memcpy(node->data, element, list->elementSize);
+    if (list == NULL) return (void*) -1;
+    if (list->size <= index) return (void*) -2;
 
-  node->next = list->head;
-  list->head = node;
+    El* ret = list->head;
 
-  // first node?
-  if(!list->tail) {
-    list->tail = list->head;
-  }
+    int i;
+    for (i = 0; i < index; i++)
+    {
+        ret = ret->next;
+    }
 
-  list->logicalLength++;
+    return ret->data;
 }
 
-void list_append(List *list, void *element)
+short ListGetEnumerator(List* list)
 {
-  ListNode *node = malloc(sizeof(ListNode));
-  node->data = malloc(list->elementSize);
-  node->next = NULL;
+    if (list == NULL) return 0;
+    if (list->size == 0 || list->pointed == NULL)
+    {
+        list->pointed = list->head;
+        return 0;
+    }
 
-  memcpy(node->data, element, list->elementSize);
-
-  if(list->logicalLength == 0) {
-    list->head = list->tail = node;
-  } else {
-    list->tail->next = node;
-    list->tail = node;
-  }
-
-  list->logicalLength++;
+    return 1;
 }
 
-void* list_head(List *list)
+void* ListPointed(List* list)
 {
-
+    El* ret = list->pointed;
+    list->pointed = list->pointed->next;
+    return ret->data;
 }
 
-void  list_remove(void* element)
+short ListRemove(List* list, void* data)
 {
+    if (list == NULL) return 1;
+    if (list->size == 0) return 2;
 
+    // Removing head
+    El* prev = list->head;
+    if (list->head->data == data)
+    {
+        list->head = list->head->next;
+        list->size--;
+        free(prev->data);
+        free(prev);
+        return 0;
+    }
+
+    // Removing in midle
+    while (prev->next != NULL)
+    {
+        if (prev->next->data == data)
+        {
+            El* temp = prev->next;
+            prev->next = prev->next->next;
+            list->size--;
+            free(temp->data);
+            free(temp);
+            return 0;
+        }
+        else
+        {
+            prev = prev->next;
+        }
+    }
+
+    return 3;
 }
 
-void list_for_each(List *list, listIterator iterator)
+void ListDestroy(List* list)
 {
-  assert(iterator != NULL);
+    El* temp;
+    list->size = 0;
 
-  ListNode *node = list->head;
-  int result = 1;
-  while(node != NULL && result) {
-    result = iterator(node->data);
-    node = node->next;
-  }
+    while (list->head != NULL){
+        temp = list->head;
+        list->head = list->head->next;
+        free(temp->data);
+        free(temp);
+    }
 }
 
+/*
+struct el* Remove(struct PriorQueue* pq){
+    if (pq == NULL || pq->head == NULL) return NULL;
 
-int list_size(List *list)
-{
-  return list->logicalLength;
-}
+    struct el *temp = pq->head;
+
+    pq->head = pq->head->next;
+    pq->size--;
+
+    return temp;
+};
+*/
