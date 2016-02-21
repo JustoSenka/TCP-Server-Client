@@ -1,0 +1,36 @@
+# depslib dependency file v1.0
+1456075382 source:c:\users\justing\desktop\code\c c++\server controller\main.c
+	<stdio.h>
+	<stdlib.h>
+
+1455916804 c:\users\justing\desktop\code\c c++\server controller\server.c
+	"Server.h"
+	<stdio.h>
+	<winsock2.h>
+
+1456082735 c:\users\justing\desktop\code\c c++\server controller\server.h
+	<winsock2.h>
+	"list.h"
+
+1456082764 source:c:\users\justing\desktop\code\c c++\server controller\server.c
+	"Server.h"
+	"list.h"
+	<process.h>
+	<stdio.h>
+	<winsock2.h>
+
+1456077082 source:c:\users\justing\desktop\code\c c++\server controller\list.c
+	<stdlib.h>
+	<string.h>
+	<assert.h>
+	"list.h"
+
+1456086018 c:\users\justing\desktop\code\c c++\server controller\list.h
+
+1456075522 source:c:\users\justing\desktop\code\c c++\server controller\client.c
+	<stdio.h>
+	<sys/types.h>
+	<sys/socket.h>
+	<netinet/in.h>
+	<netdb.h>
+
