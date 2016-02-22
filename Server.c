@@ -6,12 +6,12 @@
 #include<winsock2.h>
 
 #define MAXRECV 256
-const unsigned short port = 8888;
 
-//#pragma comment(lib,"ws2_32.lib") //Winsock Library
+#pragma comment(lib,"ws2_32.lib") //Winsock Library
 
-void Clear(char* buffer);
 AcceptArgs* GetAcceptArgs(SOCKET* sock, List* list);
+void Clear(char* buffer);
+void getsClearStream();
 
 int main()
 {
@@ -20,17 +20,24 @@ int main()
 
     List* list = ListCreate(sizeof(SOCKET));
 
+    int port;
+    printf("Enter port for server: ");
+    scanf("%d", &port);
+    getsClearStream(); // Clear the stream, after scanf, endline is left there.
+
     ServerInit(&wsa, &serverSocket);
-    ServerBindSocket(&serverSocket, port);
 
-    listen(serverSocket , 3);
+    if (!ServerBindSocket(&serverSocket, port))
+    {
+        listen(serverSocket , 3);
+        _beginthread(ServerWaitForConnection, 0, (void*) GetAcceptArgs(&serverSocket, list));
+        ServerReadAndSendInput(list);
+    }
 
-    _beginthread(ServerWaitForConnection, 0, (void*) GetAcceptArgs(&serverSocket, list));
-
-    ServerReadAndSendInput(list);
-
+    ListDestroy(list);
     closesocket(serverSocket);
     WSACleanup();
+
     return 0;
 }
 
@@ -38,7 +45,7 @@ void ServerReadAndSendInput(List* list)
 {
     char buffer[MAXRECV];
     Clear(buffer);
-    while (buffer[0] != 0xFF) // ctrl + c
+    while (1)
     {
         gets(buffer);
         int i = strlen(buffer);
@@ -185,4 +192,10 @@ AcceptArgs* GetAcceptArgs(SOCKET* sock, List* list)
     args->list = list;
     args->sock = sock;
     return args;
+}
+
+void getsClearStream()
+{
+    char buff[MAXRECV];
+    gets(buff);
 }

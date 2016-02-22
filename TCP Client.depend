@@ -1,0 +1,10 @@
+# depslib dependency file v1.0
+1456107472 source:c:\users\justing\desktop\code\c c++\tcp server client\client.c
+	"Client.h"
+	<stdio.h>
+	<winsock2.h>
+	<process.h>
+
+1456106109 c:\users\justing\desktop\code\c c++\tcp server client\client.h
+	<winsock.h>
+
