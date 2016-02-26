@@ -1,9 +1,9 @@
 #include "Server.h"
 #include "List.h"
 
-#include<process.h>
-#include<stdio.h>
-#include<winsock2.h>
+#include <process.h>
+#include <stdio.h>
+#include <winsock2.h>
 
 #define MAXRECV 256
 
@@ -12,13 +12,14 @@
 AcceptArgs* GetAcceptArgs(SOCKET* sock, List* list);
 void Clear(char* buffer);
 void getsClearStream();
+short SocketEqual(void* a, void* b);
 
 int main()
 {
     WSADATA wsa;
     SOCKET serverSocket;
 
-    List* list = ListCreate(sizeof(SOCKET));
+    List* list = ListCreate(sizeof(SOCKET), SocketEqual);
 
     int port;
     printf("Enter port for server: ");
@@ -39,24 +40,6 @@ int main()
     WSACleanup();
 
     return 0;
-}
-
-void ServerReadAndSendInput(List* list)
-{
-    char buffer[MAXRECV];
-    Clear(buffer);
-    while (1)
-    {
-        gets(buffer);
-        int i = strlen(buffer);
-
-        buffer[i] = '\r';
-        buffer[i + 1] = '\n';
-        buffer[i + 2] = '\0';
-
-        ServerSendToAll(list, buffer);
-        Clear(buffer);
-    }
 }
 
 int ServerInit(WSADATA* wsa, SOCKET* serverSocket)
@@ -112,7 +95,7 @@ void ServerWaitForConnection(void* arg_acceptArgs)
     {
         printf("Connection accepted with id: %d\n", clientSocket);
         ListInsert(list, (void*) &clientSocket);
-        _beginthread(ClientThread, 0, (void*) GetAcceptArgs(&clientSocket, list));
+        _beginthread(ServerRead, 0, (void*) GetAcceptArgs(&clientSocket, list));
     }
 
     if (clientSocket == INVALID_SOCKET)
@@ -122,27 +105,30 @@ void ServerWaitForConnection(void* arg_acceptArgs)
     }
 }
 
-void ClientThread(void* arg_acceptArgs)
+void ServerReadAndSendInput(List* list)
 {
-    AcceptArgs* args = (AcceptArgs*) arg_acceptArgs;
-    SOCKET clientSocket= *(args->sock);
-    //List* list = args->list;
-    free(args);
+    char buffer[MAXRECV];
+    Clear(buffer);
+    while (1)
+    {
+        gets(buffer);
+        int i = strlen(buffer);
 
-    ServerRead(clientSocket);
+        buffer[i] = '\r';
+        buffer[i + 1] = '\n';
+        buffer[i + 2] = '\0';
+
+        ServerSendToAll(list, buffer);
+        Clear(buffer);
+    }
 }
 
 void ServerSendToAll(List* list, char* message)
 {
     while (ListGetEnumerator(list))
     {
-        void* currData = ListPointed(list);
-        SOCKET client = *((SOCKET*) currData);
-
-        if (ServerSendToClient(client, message) == 1)
-        {
-            ListRemove(list, currData);
-        }
+        SOCKET client = *((SOCKET*) ListPointed(list));
+        ServerSendToClient(client, message);
     }
 }
 
@@ -165,8 +151,13 @@ int ServerSendToClient(SOCKET clientSocket, char* message)
     return 0;
 }
 
-void ServerRead(SOCKET clientSocket)
+void ServerRead(void* arg_acceptArgs)
 {
+    AcceptArgs* args = (AcceptArgs*) arg_acceptArgs;
+    SOCKET clientSocket= *(args->sock);
+    List* list = args->list;
+    free(args);
+
     char buffer[MAXRECV];
     Clear(buffer);
 
@@ -175,6 +166,9 @@ void ServerRead(SOCKET clientSocket)
         printf("%s", buffer);
         Clear(buffer);
     }
+
+    printf("Client disconnected with id: %d\n", clientSocket);
+    ListRemoveByValue(list, (void*) clientSocket);
 }
 
 void Clear(char* buffer)
@@ -198,4 +192,12 @@ void getsClearStream()
 {
     char buff[MAXRECV];
     gets(buff);
+}
+
+short SocketEqual(void* a, void* b)
+{
+    SOCKET sa = *((SOCKET*) a);
+    SOCKET sb = *((SOCKET*) b);
+
+    return sa == sb;
 }

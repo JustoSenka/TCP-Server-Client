@@ -1,8 +1,8 @@
 #include "Client.h"
 
-#include<stdio.h>
-#include<winsock2.h>
-#include<process.h>
+#include <stdio.h>
+#include <winsock2.h>
+#include <process.h>
 
 #define MAXRECV 256
 
@@ -31,7 +31,7 @@ int main(int argc , char *argv[])
         if (!ClientConnect(&clientSocket, ip, port))
         {
             _beginthread(ClientRead, 0, (void*) &clientSocket);
-            ClientReadAndSendInput(clientSocket);
+            ClientReadAndSendInput(&clientSocket);
         }
 
         puts("");
@@ -76,20 +76,21 @@ int ClientConnect(SOCKET* clientSocket, char* ip, u_short port)
     return 0;
 }
 
-void ClientReadAndSendInput(SOCKET clientSocket)
+void ClientReadAndSendInput(SOCKET* clientSocket)
 {
     char buffer[MAXRECV];
     Clear(buffer);
     while (1)
     {
         gets(buffer);
-        int i = strlen(buffer);
+        if (*clientSocket == 0) break;
 
+        int i = strlen(buffer);
         buffer[i] = '\r';
         buffer[i + 1] = '\n';
         buffer[i + 2] = '\0';
 
-        if (ClientSendToServer(clientSocket, buffer) != 0) break;
+        if (ClientSendToServer(*clientSocket, buffer) != 0) break;
         Clear(buffer);
     }
 }
@@ -116,15 +117,19 @@ int ClientSendToServer(SOCKET clientSocket, char* message)
 
 void ClientRead(void* arg_clientSocket)
 {
-    SOCKET clientSocket = *((SOCKET*)arg_clientSocket);
+    SOCKET* clientSocket = (SOCKET*)arg_clientSocket;
     char buffer[MAXRECV];
     Clear(buffer);
 
-    while (recv(clientSocket, buffer, MAXRECV, 0) > 0)
+    while (recv(*clientSocket, buffer, MAXRECV, 0) > 0)
     {
         printf("%s", buffer);
         Clear(buffer);
     }
+
+    *clientSocket = 0;
+    printf("Server closed connection.\n");
+    printf("Press enter to start a new one... \n");
 }
 
 void Clear(char* buffer)

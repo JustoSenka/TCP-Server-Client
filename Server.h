@@ -15,12 +15,11 @@ int ServerInit(WSADATA* wsa, SOCKET* serverSocket);
 int ServerBindSocket(SOCKET* serverSocket, u_short port);
 
 void ServerWaitForConnection(void* arg_acceptArgs);
-void ClientThread(void* arg_acceptArgs);
 
 void ServerReadAndSendInput(List* list);
 void ServerSendToAll(List* list, char* message);
 int ServerSendToClient(SOCKET clientSocket, char* message);
-void ServerRead(SOCKET clientSocket);
+void ServerRead(void* arg_acceptArgs);
 
 #endif // SERVER_H_INCLUDED
 

@@ -1,18 +1,20 @@
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <assert.h>
 
 #include "List.h"
 
 
-List* ListCreate(int elementSize)
+List* ListCreate(int elementSize, Equals equals)
 {
     List* list = (List*) malloc(sizeof(List));
     list->head = NULL;
     list->pointed = NULL;
     list->size = 0;
     list->elementSize = elementSize;
+    list->equals = equals;
     return list;
 }
 
@@ -78,6 +80,7 @@ short ListRemove(List* list, void* data)
     if (list->head->data == data)
     {
         list->head = list->head->next;
+        list->pointed = list->head;
         list->size--;
         free(prev->data);
         free(prev);
@@ -105,6 +108,28 @@ short ListRemove(List* list, void* data)
     return 3;
 }
 
+short ListRemoveByValue(List* list, void* value)
+{
+    if (list == NULL) return 1;
+    if (list->size == 0) return 2;
+    if (list->equals == NULL) return 4;
+
+    El* temp = list->head;
+    while (temp != NULL)
+    {
+        if (list->equals(temp->data, &value))
+        {
+            return ListRemove(list, temp->data);
+        }
+        else
+        {
+            temp = temp->next;
+        }
+    }
+
+    return 3;
+}
+
 void ListDestroy(List* list)
 {
     El* temp;
@@ -117,16 +142,3 @@ void ListDestroy(List* list)
         free(temp);
     }
 }
-
-/*
-struct el* Remove(struct PriorQueue* pq){
-    if (pq == NULL || pq->head == NULL) return NULL;
-
-    struct el *temp = pq->head;
-
-    pq->head = pq->head->next;
-    pq->size--;
-
-    return temp;
-};
-*/
